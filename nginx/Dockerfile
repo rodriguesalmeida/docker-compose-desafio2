@@ -1,8 +1,9 @@
 FROM nginx:1.15.0-alpine
 
+WORKDIR /usr/src/app
+
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d
 
-RUN mkdir /var/www/html -p && touch /var/www/html/index.js
+COPY nginx.conf /etc/nginx/conf.d/
 
-EXPOSE 80
+RUN mkdir /usr/src/app -p && touch /usr/src/app/index.js

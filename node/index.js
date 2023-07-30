@@ -5,18 +5,14 @@ const app = express()
 const port = 3000
 const config = {
     host:'ingrena-db',
-    user:'root',
+    user:'anderson',
     password:'123456',
     database:'nodedb'
 }
 const mysql = require('mysql');
 try {
     const connection = mysql.createConnection(config);
-    const createTable = 'create table if not exists people (id int auto_increment, nome varchar(255), primary key (id));';
-    connection.query(createTable);
-
     let insert = `Insert into people (nome) values ('Anderson Rodrigues de Almeida');`
-    
     connection.query(insert);
     connection.end(); 
 } catch (error) {
@@ -24,9 +20,7 @@ try {
     res.send(error);
 }
 
-app.get('/', (request,response)=>{
-    
-    
+app.get('/', (request,response)=>{     
     const connection = mysql.createConnection(config);
     let sql = "Select * from people order by id asc;";
     connection.query(sql,function (erro, result, fields){
@@ -53,8 +47,11 @@ app.get('/', (request,response)=>{
         `;
         response.send(conteudo);
     });
-    
-})
+    connection.end();
+});
+app.get('/healthcheck', (request,response)=>{
+    response.send('Funcionando');
+});
 app.listen(port, ()=>{
     console.log('Rodando na porta' + port)
     

@@ -13,9 +13,11 @@ services:
       - ./script-bd:/docker-entrypoint-initdb.d
     environment: 
       - MYSQL_DATABASE=nodedb
-      - MYSQL_ROOT_PASSWORD=123456      
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_PASSWORD=123456
+      - MYSQL_USER=anderson
     healthcheck:
-      test: mysqladmin ping -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      test: mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD -e 'select 1;'
       start_period: 5s
       interval: 5s
       timeout: 5s
@@ -32,7 +34,13 @@ services:
     ports: 
       - "3000:3000"
     networks: 
-      - ingrena-network 
+      - ingrena-network     
+    healthcheck:
+      test: curl -f http://ingrena-app:3000/healthcheck
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
     depends_on: 
       db:
         condition: service_healthy 
@@ -46,6 +54,10 @@ services:
       - ingrena-network
     ports: 
       - "8080:80"
+    depends_on: 
+      - app
+      - db
+    
 
 networks: 
   ingrena-network:
